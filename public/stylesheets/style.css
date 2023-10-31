@@ -151,21 +151,25 @@ input[type=text] {
   width: 300px;
 }
 
+/* Styles for the pagination container */
 .pagination {
   display: flex;
 }
 
+/* Styles for the page information */
 .page-info {
-  margin: 0 20px; /* Add spacing here */
+  margin: 0 20px;
 }
 
+/* Styles for the page numbers container */
 .page-numbers {
   list-style-type: none;
   display: flex;
 }
 
+/* Styles for individual page numbers */
 .page-number {
-  margin: 0 5px; /* Add spacing here */
+  margin: 0 5px; 
 }
 
 /* Style error messages */

@@ -16,19 +16,24 @@ function asyncHandler(cb) {
 
 // GET /books - Shows the full list of books with pagination
 router.get('/', asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1; // Default to page 1
-  const perPage = parseInt(req.query.perPage) || 10; // Default to 10 items per page
+  // Parse the 'page' and 'perPage' query parameters, or use default values
+  const page = parseInt(req.query.page) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
 
+  // Calculate the offset for pagination
   const offset = (page - 1) * perPage;
 
+  // Use Sequelize's 'findAndCountAll' to fetch books with pagination
   const { count, rows: books } = await Book.findAndCountAll({
     offset,
     limit: perPage,
     order: [['createdAt', 'DESC']],
   });
 
+  // Calculate the total number of pages for pagination
   const totalPages = Math.ceil(count / perPage);
 
+  // Render the 'index' template with fetched books and pagination information
   res.render('index', {
     books,
     title: 'Books',
