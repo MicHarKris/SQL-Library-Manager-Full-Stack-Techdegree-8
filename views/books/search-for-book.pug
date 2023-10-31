@@ -1,22 +1,40 @@
-extends layout
+extends ../layout
 
 block content
-  h1 Books
-  p
-    a.button(href="/") Back to Index
+  h1 Search Results
+  div
+    p
+      a.button(href="/") Home
 
-  table
-    thead
-      tr
-        th Title
-        th Author
-        th Genre
-        th Year
-    tbody
-      each book in books
+  if books.length
+    table
+      thead
         tr
-          td
-            a(href=`/books/${book.id}`)= book.title
-          td= book.author
-          td= book.genre
-          td= book.year
+          th Title
+          th Author
+          th Genre
+          th Year
+      tbody
+        each book in books
+          tr
+            td
+              a(href=`/books/${book.id}`)= book.title
+            td= book.author
+            td= book.genre
+            td= book.year
+
+    if totalPages > 1
+      div.pagination
+        if currentPage > 1
+          a(href=`/books/search?page=${currentPage - 1}&perPage=${perPage}&searchQuery=${searchQuery}`) Previous
+        span.page-info Page #{currentPage} of #{totalPages}
+        if currentPage < totalPages
+          a(href=`/books/search?page=${currentPage + 1}&perPage=${perPage}&searchQuery=${searchQuery}`) Next
+        ul.page-numbers
+          each pageNum in Array(totalPages).keys()
+            li.page-number
+              a(href=`/books/search?page=${pageNum + 1}&perPage=${perPage}&searchQuery=${searchQuery}`, class=pageNum + 1 === currentPage ? 'current' : '') #{pageNum + 1}
+    else
+      p No books found. Please try again.
+  else
+    p No books found. Please try again.

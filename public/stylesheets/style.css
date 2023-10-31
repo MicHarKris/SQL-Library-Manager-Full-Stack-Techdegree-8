@@ -14,42 +14,81 @@ a {
   transition: 0.4s;
 }
 
-  /* Style link hover effect */
-  a:hover {
-    color: #66621F;
-  }
+/* Style link hover effect */
+a:hover {
+  color: #66621F;
+}
+
+/* Custom CSS to position elements side by side */
+div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align elements to the left */
+}
+
+.button {
+  margin-right: 10px; /* Add spacing between the button and search bar */
+}
 
 /* Style buttons and submit inputs */
 a.button, input[type=submit] {
+  text-align: center;
+  margin-right: 50px;
   color: #0C0C0B;
   background: #FFF100;
   font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
-  padding: 10px 14px 12px;
+  padding: 12px 0; /* Set 12px padding for top and bottom, and 0 for left and right */
   font-size: 14px;
   border-radius: 2px;
   cursor: pointer;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  display: inline-block; /* Change display property to inline-block */
+  min-width: 150px; /* Set the minimum width */
 }
 
 /* Style buttons within forms and submit inputs with hover effect */
 form a.button, input[type=submit] {
   margin-left: 140px;
   transition: 0.4s;
+  color: #0C0C0B;
+  background: #FFF100;
 }
 
 /* Style submit inputs */
 input[type=submit] {
+  min-width: 150px;
+  font-weight: bold;
   border: 0;
 }
 
-  /* Apply a hover effect to buttons and submit inputs */
-  a.button:hover, input[type=submit]:hover {
-    background-color: #66621F;
-  }
+/* Apply a hover effect to buttons and submit inputs */
+a.button:hover, input[type=submit]:hover {
+  background-color: #66621F;
+  min-width: 150px !important; /* Set the minimum width for buttons with class 'button' */
+}
+
+/* Define styling for search button */
+.search-button {  
+  text-align: center;
+  margin-right: 10px;
+  color: #0C0C0B;
+  background: #FFF100;
+  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding: 12px 0; /* Set 12px padding for top and bottom, and 0 for left and right */
+  font-size: 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  display: inline-block; /* Change display property to inline-block */
+  min-width: 150px; /* Set the minimum width */
+  font-weight: bold;
+  border: 0;
+  margin-left: 20px;
+}
 
 /* Define styling for paragraphs */
 p {
-  margin: 20px auto;
+  margin: 20px;
 }
 
 /* Define styling for unordered lists */
@@ -110,6 +149,23 @@ input {
 input[type=text] {
   margin-left: 7px;
   width: 300px;
+}
+
+.pagination {
+  display: flex;
+}
+
+.page-info {
+  margin: 0 20px; /* Add spacing here */
+}
+
+.page-numbers {
+  list-style-type: none;
+  display: flex;
+}
+
+.page-number {
+  margin: 0 5px; /* Add spacing here */
 }
 
 /* Style error messages */

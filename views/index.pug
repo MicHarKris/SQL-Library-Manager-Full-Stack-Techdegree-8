@@ -2,12 +2,12 @@ extends layout
 
 block content
   h1 Books
-  p
-    a.button(href="/books/new") Create New Book
-
-  form(action="/search", method="GET")
-    input(type="text", name="searchQuery", placeholder="Search for Books")
-    button(type="submit") Search
+  div
+    p
+      a.button(href="/books/new") Create New Book
+    form(action="/books/search", method="GET")
+      input(type="text", name="searchQuery", placeholder="Search Books")
+      button(type="submit", class="search-button") Search
 
   table
     thead
@@ -24,3 +24,16 @@ block content
           td= book.author
           td= book.genre
           td= book.year
+
+  if totalPages > 1
+  div.pagination
+    if currentPage > 1
+      a(href=`/books?page=${currentPage - 1}&perPage=${perPage}`) Previous 
+    span.page-info Page #{currentPage} of #{totalPages}
+    if currentPage < totalPages
+      a(href=`/books?page=${currentPage + 1}&perPage=${perPage}`)  Next
+    ul.page-numbers
+      each pageNum in Array(totalPages).keys()
+        li.page-number
+          a(href=`/books?page=${pageNum + 1}&perPage=${perPage}`, class=pageNum + 1 === currentPage ? 'current' : '') #{pageNum + 1}
+

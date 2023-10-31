@@ -1,4 +1,5 @@
 const express = require('express');
+const { sequelize } = require('../models'); // Import the Sequelize instance
 const router = express.Router();
 const { Book } = require('../models');
 
@@ -13,11 +14,27 @@ function asyncHandler(cb) {
   }
 }
 
-// GET /books - Shows the full list of books
+// GET /books - Shows the full list of books with pagination
 router.get('/', asyncHandler(async (req, res) => {
-  // Retrieve a list of books ordered by createdAt
-  const books = await Book.findAll({ order: [["createdAt", "DESC"]] });
-  res.render('index', { books, title: "Books" });
+  const page = parseInt(req.query.page) || 1; // Default to page 1
+  const perPage = parseInt(req.query.perPage) || 10; // Default to 10 items per page
+
+  const offset = (page - 1) * perPage;
+
+  const { count, rows: books } = await Book.findAndCountAll({
+    offset,
+    limit: perPage,
+    order: [['createdAt', 'DESC']],
+  });
+
+  const totalPages = Math.ceil(count / perPage);
+
+  res.render('index', {
+    books,
+    title: 'Books',
+    totalPages,
+    currentPage: page,
+  });
 }));
 
 /* Create a new book form. */
@@ -25,6 +42,55 @@ router.get('/new', (req, res) => {
   // Render the form for creating a new book
   res.render("books/new-book", { book: {}, errors: [], title: 'New Book' });
 });
+
+// GET /books/search - Handles the search query
+router.get('/search', asyncHandler(async (req, res) => {
+  console.log('search Path');
+  const { searchQuery } = req.query;
+  const perPage = parseInt(req.query.perPage) || 10; // Default to 10 items per page
+  const page = parseInt(req.query.page) || 1; // Default to page 1
+
+  if (!searchQuery || searchQuery.trim() === "") {
+    // If the search query is empty or contains only whitespace, render a search results page with no results.
+    res.render('books/search-for-book', { books: [], title: 'No Matching Books', totalPages: 1, currentPage: 1, perPage, searchQuery: '' }); // Pass an empty searchQuery here
+  } else {
+    // Define the raw SQL query to perform a case-insensitive search
+    const query = `
+      SELECT * FROM Books
+      WHERE title LIKE :searchQuery
+      OR author LIKE :searchQuery
+      OR genre LIKE :searchQuery
+      OR year LIKE :searchQuery
+      ORDER BY createdAt DESC
+    `;
+
+    // Execute the raw SQL query with the searchQuery parameter
+    const books = await sequelize.query(query, {
+      replacements: { searchQuery: `%${searchQuery}%` },
+      type: sequelize.QueryTypes.SELECT
+    });
+
+    const totalCount = books.length;
+    const totalPages = Math.ceil(totalCount / perPage);
+
+    // Slice the books array to display only the current page
+    const startIndex = (page - 1) * perPage;
+    const endIndex = startIndex + perPage;
+    const booksForPage = books.slice(startIndex, endIndex);
+
+    // Render the search results with pagination data
+    res.render('books/search-for-book', {
+      books: booksForPage,
+      title: `Search Results for "${searchQuery}"`,
+      totalPages,
+      currentPage: page,
+      perPage,
+      searchQuery, // Pass the searchQuery to the template
+    });
+  }
+}));
+
+
 
 /* POST created book. */
 router.post('/', asyncHandler(async (req, res) => {
@@ -92,32 +158,6 @@ router.post('/:id/delete', asyncHandler(async (req, res) => {
     res.redirect("/books");
   } else {
     res.sendStatus(404);
-  }
-}));
-
-// GET /books/search - Handles the search query
-router.get('/search', asyncHandler(async (req, res) => {
-  const { searchQuery } = req.query;
-
-  if (!searchQuery || searchQuery.trim() === "") {
-    console.log('No search query provided');
-    // If the search query is empty, redirect to the main books page
-    res.redirect('/books');
-  } else {
-    // Search for books that match the search query
-    const books = await Book.findAll({
-      where: {
-        [Op.or]: [
-          { title: { [Op.like]: `%${searchQuery}%` } },
-          { author: { [Op.like]: `%${searchQuery}%` } },
-          { genre: { [Op.like]: `%${searchQuery}%` } },
-          { year: { [Op.like]: `%${searchQuery}%` } }
-        ]
-      },
-      order: [["createdAt", "DESC"]]
-    });
-
-    res.render('search-for-book', { books, title: `Search Results for "${searchQuery}"` });
   }
 }));
 
